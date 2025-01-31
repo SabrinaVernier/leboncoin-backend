@@ -4,6 +4,10 @@
  * offer controller
  */
 
+// @ts-ignore
+const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
+
+// @ts-ignore
 const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController("api::offer.offer", ({ strapi }) => ({
@@ -52,6 +56,24 @@ module.exports = createCoreController("api::offer.offer", ({ strapi }) => ({
       return { data, meta };
     } catch (error) {
       ctx.response.status = 500;
+      return { message: error.message };
+    }
+  },
+  async buy(ctx) {
+    try {
+      const { status } = await stripe.charges.create({
+        amount: ctx.request.body.amount * 100,
+        currency: "eur",
+        description: `Paiement my-project Leboncoin pour : ${ctx.request.body.title}`,
+        source: ctx.request.body.token,
+      });
+      console.log(ctx.request.body);
+
+      return { status: status };
+    } catch (error) {
+      console.log("Controller error catch>>>", error);
+
+      ctx.request.status = 500;
       return { message: error.message };
     }
   },
