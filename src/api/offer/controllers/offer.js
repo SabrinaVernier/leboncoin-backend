@@ -4,6 +4,8 @@
  * offer controller
  */
 
+// comment pour relancer build ou container - error admin collectio
+
 // @ts-ignore
 const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 
